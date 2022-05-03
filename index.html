@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>PHP CRUD WITH AJAX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<style>
+*, *:before, *:after{
+	box-sizing: content-box;
+	margin: 0;
+	padding: 0;
+}
+html,
+body{
+	margin: 0;
+	padding: 0;
+	box-sizing: content-box;
+	font-family: 'Montserrat Alternates', sans-serif;
+}
+.main {
+    padding: 30px 0 130px 0;
+}
+.mr-1{
+	margin-right: 5px;
+}
+.mt-3{
+    margin-top: 1.5rem;
+}
+.mt-5{
+	margin-top: 3rem;
+}
+.mb-5{
+	margin-bottom: 3rem;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    box-shadow: 0px 5px 18px -12px #000;
+    padding-top: 35px;
+    padding-bottom: 35px;
+    border-radius: 10px;
+}
+.row {
+    margin-right: -15px;
+    margin-left: -15px;
+    display: flex;
+    flex-wrap: wrap;
+}
+.col-3 {
+    position: relative;
+    min-height: 1px;
+    padding-right: 12px;
+    padding-left: 12px;
+    width: 23%;
+    float: left;
+}
+.col-6 {
+    position: relative;
+    min-height: 1px;
+    padding-right: 18px;
+    padding-left: 18px;
+    width: 47%;
+    float: left;
+}
+.col-12{
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+	width: 100%;
+	float: left;
+}
+.form-group {
+    display: block;
+    position: relative;
+}
+.form-control {
+    padding: 10px 15px;
+    font-size: 16px;
+    width: -webkit-fill-available;
+    background: transparent;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    outline: none;
+}
+input[type="text"]:focus,
+input[type="email"]:focus{
+	outline: none;
+}
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    border-radius: .25rem;
+    transition: all .2s ease-in-out;
+}
+.btn-success {
+    color: #fff;
+    background-color: #198754;
+    border-color: #198754;
+}
+.btn-danger {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.btn-submit {
+    border: none;
+    background: #00b3dd;
+    height: 40px;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 0;
+    display: block;
+}
+label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 2px 5px;
+    display: inline;
+    border-radius: 4px;
+    background: #fff;
+    z-index: -1;
+    transform: translate(8px, 9px);
+    transition: all .3s ease-out;
+}
+label:before {
+    content: attr(placeholder);
+}
+input[type="text"]:focus ~ label,
+input[type="text"]:valid ~ label,
+input[type="email"]:focus ~ label,
+input[type="email"]:valid ~ label {
+    transform: translate(8px, -14px);
+    z-index: 1;
+    border: 1px solid #aaa;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+table {
+    width: 100%;
+    text-align: left;
+}
+tr:nth-child(odd){
+	background: #e7e7e7;
+}
+tr:nth-child(even){
+	background: #ffffff;
+}
+th {
+    padding: 10px 15px;
+    background: #4e4e4e;
+    color: #fff;
+    border-radius: 8px;
+}
+td {
+	border-radius: 8px;
+    padding: 10px 15px;
+}
+
+.alert {
+    position: relative;
+    padding: 0.7rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+}
+.alert-success {
+    color: #0f5132;
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+}
+.alert-danger {
+    color: #842029;
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+}
+#success-message {
+    display: none;
+    position: absolute;
+    width: auto;
+    top: 0;
+    right: 0;
+    margin: 30px;
+}
+#error-message {
+    display: none;
+    position: absolute;
+    width: auto;
+    top: 0;
+    right: 0;
+    margin: 30px;
+}
+</style>
+</head>
+<body>
+
+<section class="main">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="title">CRUD WITH AJAX</h1>
+            </div>
+        </div>
+    </div>
+	<form method="post" id="addForm" class="mt-3">
+		<div class="container">
+			<div class="row">
+				<div class="col-3">
+					<div class="form-group">
+						<input type="text" name="username" class="form-control" required />
+						<label placeholder="Username"></label>
+					</div>
+				</div>
+				<div class="col-3">
+					<div class="form-group">
+						<input type="email" name="email" class="form-control" required />
+						<label placeholder="Email"></label>
+					</div>
+				</div>
+
+				<div class="col-3">
+					<div class="form-group">
+						<input type="text" name="phone" class="form-control" required />
+						<label placeholder="Phone" ></label>
+					</div>
+				</div>
+				<div class="col-3">
+					<div class="form-group">
+						<input type="submit" name="submit" class="btn btn-submit" value="Submit" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+
+	<form method="post" id="updateForm" class="mt-3" style="display:none;">
+		<div class="container">
+			<div class="row" >
+				<div class="col-3">
+					<input type="hidden" name="id" id="edit-id" >
+					<div class="form-group">
+						<input type="text" name="username" id="edit-username" class="form-control" required />
+						<label placeholder="Username"></label>
+					</div>
+				</div>
+				<div class="col-3">
+					<div class="form-group">
+						<input type="email" name="email" id="edit-email" class="form-control" required />
+						<label placeholder="Email"></label>
+					</div>
+				</div>
+
+				<div class="col-3">
+					<div class="form-group">
+						<input type="text" name="phone" id="edit-phone" class="form-control" required />
+						<label placeholder="Phone" ></label>
+					</div>
+				</div>
+				<div class="col-3">
+					<div class="form-group">
+						<input type="button" name="update" id="edit-submit" class="btn btn-submit" value="Update" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+
+
+    <form method="post" id="searchForm" class="mt-3">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-3">
+                    <div class="form-group">
+                        <input type="text" name="search" id="search" class="form-control" autocomplete="off" required />
+                        <label placeholder="Search"></label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="40px">S no</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th width="132px">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="load-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<div id="success-message" class="alert alert-success"></div>
+<div id="error-message" class="alert alert-danger"></div>
+
+<script type="text/javascript" src="js/jquery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  loadTable();
+})
+
+
+//Fetch All Records
+  function loadTable(){ 
+    $("#load-table").html("");
+    $.ajax({ 
+      url : 'http://localhost/php/api-fetch-all.php',
+      type : "GET",
+      success : function(data){
+        if(data.status == false){
+          $("#load-table").append("<tr><td colspan='6' style='text-align:center;'><h2>"+ data.message +"</h2></td></tr>");
+        }else{
+          $.each(data, function(key, value){ 
+            $("#load-table").append("<tr>" + 
+                                    "<td>" + (key+1) + "</td>" + 
+                                    "<td>" + value.username +"</td>" + 
+                                    "<td>" + value.email +"</td>" + 
+                                    "<td>" + value.phone +"</td>" + 
+                                    "<td><button id='editBtn' class='btn btn-success mr-1' data-eid='"+ value.id + "'>Edit</button>" + 
+                                    "<button id='deleteBtn' class='btn btn-danger' data-id='"+ value.id + "'>Delete</button></td>" + 
+                                    "</tr>").fadeIn("slow");
+          });
+        }
+      }
+    });
+  }
+
+
+
+</script>
+
+<script>
+$(document).on("submit", function(e) {
+	e.preventDefault();
+	onSubmit();
+})
+// Messages
+function message(message, status){
+    if(status == true){
+      $("#success-message").html(message).slideDown();
+      $("#error-message").slideUp();
+      setTimeout(function(){
+        $("#success-message").slideUp();
+      },4000);
+
+    }else if(status == false){
+      $("#error-message").html(message).slideDown();
+      $("#success-message").slideUp();
+      setTimeout(function(){
+        $("#error-message").slideUp();
+      },4000);
+    }
+  }
+
+  // Function for form Data to JSON Object
+  function jsonData(targetForm){
+      var arr = $(targetForm).serializeArray();
+    
+      var obj = {};
+      for(var a= 0; a < arr.length; a++){
+        if(arr[a].value == ""){
+          return false;
+        }
+        obj[arr[a].name] = arr[a].value;
+      }
+      
+      var json_string = JSON.stringify(obj);
+
+      return json_string;
+      
+  }
+
+
+	function onSubmit() {
+		var formData = jsonData("#addForm");
+		$.ajax({
+			url : 'http://localhost/php/api-insert.php',
+      		type : "POST",
+      		data : formData,
+      		success : function(data){
+		        message(data.message, data.status);
+		        if(data.status == true){
+		          loadTable();
+		          $("#addForm").trigger("reset");
+		        }
+		      }
+		});
+	}
+
+
+
+//Delete Record
+$(document).on("click","#deleteBtn",function(){
+    if(confirm("Do you really want to delete this record ? ")){
+      var userId = $(this).data("id");
+      var obj = {id : userId};
+      var myJSON = JSON.stringify(obj);
+
+      var row = this;
+
+      $.ajax({
+      url : 'http://localhost/php/api-delete.php',
+      type : "POST",
+      data : myJSON,
+      success : function(data){
+        message(data.message, data.status);
+        if(data.status == true){
+          $(row).closest("tr").fadeOut();
+          loadTable();
+        }
+      }
+    });
+    }
+  });
+
+
+//Fetch Single Record : Show in Modal Box
+$(document).on("click","#editBtn",function(){
+    $("#addForm").hide();
+    $("#updateForm").show();
+    var userId = $(this).data("eid");
+    var obj = {id : userId};
+    var myJSON = JSON.stringify(obj);
+
+    $.ajax({
+      url : 'http://localhost/php/api-fetch-single.php',
+      type : "POST",
+      data : myJSON,
+      success : function(data){
+        $("#edit-id").val(data[0].id);
+        $("#edit-username").val(data[0].username);
+        $("#edit-email").val(data[0].email);
+        $("#edit-phone").val(data[0].phone);
+      }
+    });
+  });
+
+
+
+
+
+//Update Record
+$("#edit-submit").on("click",function(e){
+    e.preventDefault();
+
+    var jsonObj = jsonData("#updateForm");
+
+    if( jsonObj == false){
+      message("All Fields are required.",false);
+    }else{
+      $.ajax({ 
+      url : 'http://localhost/php/api-update.php',
+      type : "POST",
+      data : jsonObj,
+      success : function(data){
+        message(data.message, data.status);
+        if(data.status == true){
+          	$("#addForm").show();
+			$("#updateForm").hide();
+          loadTable();
+        }
+      }
+    });
+  }
+  });
+
+
+
+
+//Live Search Record
+$("#search").on("keyup",function(){
+    var search_term = $(this).val();
+
+    $("#load-table").html("");
+
+    $.ajax({ 
+      url : 'http://localhost/php/api-search.php?search=' + search_term,
+      type : "GET",
+      success : function(data){
+       if(data.status == false){
+          $("#load-table").append("<tr><td colspan='6' style='text-align:center;'><h2>"+ data.message +"</h2></td></tr>");
+        }else{
+          $.each(data, function(key, value){
+            $("#load-table").append("<tr>" + 
+                                    "<td>" + (key+1) + "</td>" + 
+                                    "<td>" + value.username +"</td>" + 
+                                    "<td>" + value.email +"</td>" + 
+                                    "<td>" + value.phone +"</td>" + 
+                                    "<td><button id='editBtn' class='btn btn-success mr-1' data-eid='"+ value.id + "'>Edit</button>" + 
+                                    "<button id='deleteBtn' class='btn btn-danger' data-id='"+ value.id + "'>Delete</button></td>" + 
+                                    "</tr>").fadeIn("slow");
+          });
+        }
+      }
+    });
+  })
+
+
+</script>
+</body>
+</html>
